@@ -76,6 +76,14 @@ public class BookController {
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
+
+        Book book = new Book();
+        book.setTitle(bookDTO.getTitle());
+        book.setAuthor(bookDTO.getAuthor());
+        book.setDescription(bookDTO.getDescription());
+        book.setPrice(bookDTO.getPrice());
+        book.setImage(filename);
+        bookRepository.save(book);
         return "redirect:/books";
     }
 }

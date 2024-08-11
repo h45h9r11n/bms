@@ -50,9 +50,10 @@
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirm-password').value;
+        const role = 'USER';
 
         if (password === confirmPassword) {
-            const data = {username, email, password};
+            const data = {username, email, password, role};
             const jsonData = JSON.stringify(data);
 
             fetch('/req/signup', {

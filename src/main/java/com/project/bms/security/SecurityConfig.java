@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @AllArgsConstructor
@@ -59,16 +60,33 @@ public class SecurityConfig {
 //    }
 
     @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return (request, response, authentication) -> {
+            String role = authentication.getAuthorities().stream()
+                    .map(grantedAuthority -> grantedAuthority.getAuthority())
+                    .findFirst()
+                    .orElse("ROLE_USER");
+
+            if (role.equals("ROLE_ADMIN")) {
+                response.sendRedirect("/admin");
+            } else {
+                response.sendRedirect("/index");
+            }
+        };
+    }
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(httpForm -> {
             httpForm.loginPage("/req/login").permitAll();
-            httpForm.defaultSuccessUrl("/index", true);
+            httpForm.defaultSuccessUrl("/books", true);
+            httpForm.successHandler(authenticationSuccessHandler());
 //            httpForm.failureHandler(authenticationFailureHandler());
         })
         .authorizeHttpRequests(registry ->{
-            registry.requestMatchers("/req/signup", "/css/**", "/js/**").permitAll();
+            registry.requestMatchers("/req/signup", "/css/**", "/js/**", "/admin", "/books/**", "/books/create", "/public").permitAll();
+//            registry.requestMatchers("/admin/**").hasRole("ADMIN");
             registry.anyRequest().authenticated();
 
         }).build();

@@ -9,8 +9,10 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -85,12 +87,13 @@ public class SecurityConfig {
 //            httpForm.failureHandler(authenticationFailureHandler());
         })
         .authorizeHttpRequests(registry ->{
-            registry.requestMatchers("/req/signup", "/css/**", "/js/**", "/admin", "/books/**", "/books/create", "/public").permitAll();
+
+            registry.requestMatchers("/req/signup","/admin", "/css/**", "/js/**", "/public/**").permitAll();
 //            registry.requestMatchers("/admin/**").hasRole("ADMIN");
             registry.anyRequest().authenticated();
-
         }).build();
 
     }
+
 
 }

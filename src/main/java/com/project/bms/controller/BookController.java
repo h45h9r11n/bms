@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 
@@ -103,5 +104,66 @@ public class BookController {
 
         }
         return "/books/edit";
+    }
+
+    @PostMapping("/edit")
+    public String editBook(Model model, @RequestParam Long id, @Valid @ModelAttribute BookDTO bookDTO, BindingResult result) throws IOException {
+        try {
+            Book book = bookRepository.findById(id).get();
+            model.addAttribute("book", book);
+
+            if (result.hasErrors()) {
+                return "/books/edit";
+            }
+
+            if (!bookDTO.getImage().isEmpty()) {
+                String uploadDir = "public/images/";
+                Path oldImagePath = Paths.get(uploadDir + bookDTO.getImage());
+                try {
+                    Files.delete(oldImagePath);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                //save new image file
+                MultipartFile image = bookDTO.getImage();
+                Date createAt = new Date();
+                String filename = createAt.getTime() + "_" + image.getOriginalFilename();
+
+                try (InputStream inputStream = image.getInputStream()) {
+                    Files.copy(inputStream, Paths.get(uploadDir + filename), StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                book.setImage(filename);
+
+            }
+            book.setTitle(bookDTO.getTitle());
+            book.setAuthor(bookDTO.getAuthor());
+            book.setDescription(bookDTO.getDescription());
+            book.setPrice(bookDTO.getPrice());
+            bookRepository.save(book);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return "redirect:/books";
+    }
+
+    @GetMapping("/delete")
+    public String deleteBook(@RequestParam Long id) {
+        try {
+            Book book = bookRepository.findById(id).get();
+            Path imagePath = Paths.get("public/images" + book.getImage());
+            try {
+                Files.delete(imagePath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            bookRepository.delete(book);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/books";
     }
 }

@@ -1,8 +1,6 @@
 package com.project.bms.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Generated;
@@ -13,18 +11,18 @@ import lombok.Getter;
 
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String password;
     private String email;
     private String fullname;
-    private String role;
+    @ManyToMany
+    private Role role;
     private String avatar;
 
     public User() {
     }
-
 
     public Long getId() {
         return id;
@@ -66,11 +64,11 @@ public class User {
         this.fullname = fullname;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

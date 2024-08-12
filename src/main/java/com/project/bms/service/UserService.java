@@ -28,9 +28,10 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(), new ArrayList<>());
     }
 
-    private static Collection<? extends GrantedAuthority> getAuthorities(User user) {
-        String userRoles = user.getRole().stream().map((role) -> role.getName().toArray(String[]::new));
-        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(userRoles);
-    }
+//    private static Collection<? extends GrantedAuthority> getAuthorities(User user) {
+//        String userRoles = user.getRole().stream().map((role) -> role.getName().toArray(String[]::new));
+//        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(userRoles);
+//        return authorities;
+//    }
 
 }

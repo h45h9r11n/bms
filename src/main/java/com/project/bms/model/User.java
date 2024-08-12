@@ -17,8 +17,8 @@ public class User {
     private String password;
     private String email;
     private String fullname;
-    @ManyToMany
-    private Role role;
+//    @ManyToMany
+    private String role;
     private String avatar;
 
     public User() {
@@ -64,11 +64,11 @@ public class User {
         this.fullname = fullname;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

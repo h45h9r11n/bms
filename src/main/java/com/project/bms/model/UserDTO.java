@@ -16,7 +16,7 @@ public class UserDTO {
     @NotEmpty
     private String fullname;
 
-    private Role role;
+    private String role;
 
     private MultipartFile avatar;
 
@@ -52,11 +52,11 @@ public class UserDTO {
         this.fullname = fullname;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

@@ -9,10 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import com.project.bms.model.Book;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,10 +43,10 @@ public class BookController {
 
     @PostMapping("/create")
     public String createBook(@Valid @ModelAttribute BookDTO bookDTO, BindingResult result) throws IOException {
-        if (bookDTO.getImage().isEmpty()){
+        if (bookDTO.getImage().isEmpty()) {
             result.addError(new FieldError("bookDTO", "image", "Image is required"));
         }
-        if (result.hasErrors()){
+        if (result.hasErrors()) {
             return "/books/create";
         }
 
@@ -57,20 +54,20 @@ public class BookController {
         MultipartFile image = bookDTO.getImage();
         Date createAt = new Date();
         String filename = createAt.getTime() + "_" + image.getOriginalFilename();
-        try{
+        try {
             String uploadDir = "public/images/";
             Path uploadPath = Paths.get(uploadDir);
-            if(!Files.exists(uploadPath)){
+            if (!Files.exists(uploadPath)) {
                 try {
                     Files.createDirectories(uploadPath);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-            try (InputStream inputStream = image.getInputStream()){
+            try (InputStream inputStream = image.getInputStream()) {
                 Path filePath = uploadPath.resolve(filename);
-                Files.copy(inputStream, Paths.get(uploadDir+filename));
-            } catch (Exception e){
+                Files.copy(inputStream, Paths.get(uploadDir + filename));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } catch (RuntimeException e) {
@@ -85,5 +82,26 @@ public class BookController {
         book.setImage(filename);
         bookRepository.save(book);
         return "redirect:/books";
+    }
+
+
+    @GetMapping("/edit")
+    public String showEditBook(Model model, @RequestParam Long id) {
+        try {
+            Book book = bookRepository.findById(id).get();
+            model.addAttribute("book", book);
+            BookDTO bookDTO = new BookDTO();
+            bookDTO.setTitle(book.getTitle());
+            bookDTO.setAuthor(book.getAuthor());
+            bookDTO.setDescription(book.getDescription());
+            bookDTO.setPrice(book.getPrice());
+            model.addAttribute("bookDTO", bookDTO);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/books";
+
+        }
+        return "/books/edit";
     }
 }
